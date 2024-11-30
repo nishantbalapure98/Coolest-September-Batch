@@ -61,9 +61,12 @@
       // Also changes the data-color attribute to "used"
 
       const allCards = document.querySelectorAll(".card");
+    
 
       for (let i = 0; i < allCards.length; i++) {
         allCards[i].addEventListener("dblclick", function (e) {
+          console.log(e)
+          console.log(e.target)
           const color = e.target.getAttribute("data-color");
 
           e.target.classList.add(color);
