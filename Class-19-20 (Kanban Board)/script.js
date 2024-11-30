@@ -7,10 +7,18 @@ const textArea = document.querySelector(".text-area");
 const mainCont = document.querySelector('.main-cont')
 const allPriorityColors = document.querySelectorAll('.priority-color')
 const toolBoxColors = document.querySelectorAll('.color-box')
+let ticketsArr = JSON.parse(localStorage.getItem('tickets'))||[]
 
+// Init function which runs on every refresh to get the tickets form local storage
+function init(){
+  if(localStorage.getItem('tickets')){
+      ticketsArr.forEach(function(ticket){
+        createTicket(ticket.ticketColor , ticket.task , ticket.id)
+      })
+  }
+}
 
-
-
+init()
 
 
 // local variables
@@ -55,8 +63,19 @@ removeBtn.addEventListener('click' , function(){
 
 function handleRemoval(ticket){
    ticket.addEventListener('click' , function(){
+   
     if(removeBtnFlag==true){
+
+      const id = ticket.querySelector('.ticket-id').innerText
+      const ticketIdx = getIdx(id)
+
+      const deletedItem = ticketsArr.splice(ticketIdx , 1)
+      console.log(deletedItem)
+
+
+      updateLocalStorage()
       ticket.remove()
+     
     } 
    })
 }
@@ -93,11 +112,15 @@ toolBoxColors.forEach(function(colorElem){
 // Changing Task Priority on colorBand
 function handleColor(ticket){
   const ticketColorBand = ticket.querySelector('.ticket-color')
+  const id = ticket.querySelector('.ticket-id').innerText
+ 
   console.log(ticketColorBand)
   ticketColorBand.addEventListener('click' , function(){
     const currentColor = ticketColorBand.style.backgroundColor
     console.log(currentColor) // lightpink
-
+      const ticketIdx = getIdx(id) // 2
+  
+      
     let currentColorIdx = colors.findIndex(function(color){
       return currentColor === color
     }) // 0
@@ -107,18 +130,23 @@ function handleColor(ticket){
     const newColorIdx = currentColorIdx % colors.length // 1
     const newColorBand = colors[newColorIdx]
     ticketColorBand.style.backgroundColor = newColorBand
+    ticketsArr[ticketIdx].ticketColor = newColorBand
+
+    updateLocalStorage()
     
   })
 
 }
-
+// Handle Lock
 function handleLock(ticket){
   const ticketLockElem = ticket.querySelector('.ticket-lock')
+  const id = ticket.querySelector('.ticket-id').innerText
     const ticketLockIcon = ticketLockElem.children[0]
     const taskArea = ticket.querySelector('.task-area')
     console.log(ticketLockIcon)
 
     ticketLockIcon.addEventListener('click' , function(){
+      const ticketIdx = getIdx(id)
       if(ticketLockIcon.classList.contains(lockClose)){
         ticketLockIcon.classList.remove(lockClose)
         ticketLockIcon.classList.add(lockOpen)
@@ -130,6 +158,9 @@ function handleLock(ticket){
         ticketLockIcon.classList.add(lockClose)
         taskArea.setAttribute('contenteditable' , 'false')
       }
+
+      ticketsArr[ticketIdx].task = taskArea.innerText
+      updateLocalStorage()
     })
 
 
@@ -174,8 +205,12 @@ modalCont.addEventListener("keydown", function (e) {
     createTicket(modalPriorityColor, task , id);
     modalCont.style.display = "none";
     addBtnFlag = false
+    ticketsArr.push({id ,task , ticketColor : modalPriorityColor })
+    updateLocalStorage()
   }
 });
+
+
 
 allPriorityColors.forEach(function(colorElem){
     colorElem.addEventListener('click', function(){
@@ -191,6 +226,21 @@ allPriorityColors.forEach(function(colorElem){
 
 
     })
+
+
+   
 })
+
+function updateLocalStorage(){
+  localStorage.setItem('tickets' , JSON.stringify(ticketsArr))
+}
+
+function getIdx(id){
+   const ticketIdx = ticketsArr.findIndex(function(ticket){
+      return ticket.id === id
+   })
+  return ticketIdx
+
+}
 
 
