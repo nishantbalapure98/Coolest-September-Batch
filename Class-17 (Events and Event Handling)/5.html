@@ -112,15 +112,16 @@
     <script>
       // Q Make the filter work
 
-      const dropDown = document.querySelector("select");
+      const dropDown = document.querySelector("select");//Access Dropdown Menu
       console.log(dropDown);
 
+      // 'change' event. This event triggers whenever the user selects a different option from the dropdown menu.
       dropDown.addEventListener("change", function () {
-        const filterVal = dropDown.value;
+        const filterVal = dropDown.value;//Retrieve Selected Value
 
-        const prices = document.querySelectorAll(".price");
+        const prices = document.querySelectorAll(".price");// Query All Movies
 
-        for (let i = 0; i < prices.length; i++) {
+        for (let i = 0; i < prices.length; i++) { //Filtering Logic
           if (prices[i].getAttribute("data-category") == filterVal) {
             prices[i].parentElement.style.display = "block";
           } else {
